@@ -1,6 +1,7 @@
 package com.glazarou.LimitOrderbook;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class OrderbookAbstract {
     protected HashMap<Integer, Limit> limitBuyMap;
@@ -50,7 +51,16 @@ public abstract class OrderbookAbstract {
     public Limit getLimitSellTree() { return limitSellTree; }
     public Limit getLowestSell() { return lowestSell; }
     public Limit getHighestBuy() { return highestBuy; }
-
+    
+    //functions for testing
+    public Limit searchLimitMaps(int limitPrice, Side side){
+        Map<Integer, Limit> limitMap = (side == Side.BUY) ? limitBuyMap : limitSellMap;
+        if (limitMap.containsKey(limitPrice)){
+            return limitMap.get(limitPrice);
+        } else {
+            return null;
+        }
+    }
 
     //print methods for visualizing
     public void printOrderBook() {
