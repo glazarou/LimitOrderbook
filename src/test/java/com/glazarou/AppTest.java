@@ -114,4 +114,115 @@ public class AppTest {
         assertNull(limit1.getLeftChild());
     }
 
+    //updating book edges
+    @Test
+    public void testUpdateBookEdgeOnInsertLowestSell() {
+        orderBook.addLimitOrder(111, Side.SELL, 43, 80);
+        orderBook.addLimitOrder(112, Side.SELL, 46, 78);
+        assertEquals(78, orderBook.getLowestSell().getLimitPrice());
+
+        orderBook.addLimitOrder(113, Side.SELL, 46, 77);
+        assertEquals(77, orderBook.getLowestSell().getLimitPrice());
+
+        orderBook.addLimitOrder(114, Side.SELL, 46, 85);
+        assertEquals(77, orderBook.getLowestSell().getLimitPrice());
+    }
+
+    @Test
+    public void testUpdateBookEdgeOnInsertHighestBuy() {
+        orderBook.addLimitOrder(111, Side.BUY, 43, 80);
+        orderBook.addLimitOrder(112, Side.BUY, 46, 78);
+        assertEquals(80, orderBook.getHighestBuy().getLimitPrice());
+
+        orderBook.addLimitOrder(113, Side.BUY, 46, 82);
+        assertEquals(82, orderBook.getHighestBuy().getLimitPrice());
+
+        orderBook.addLimitOrder(114, Side.BUY, 46, 70);
+        assertEquals(82, orderBook.getHighestBuy().getLimitPrice());
+    }
+
+    @Test
+    public void testUpdateBookEdgeOnDeleteLowestSell() {
+        orderBook.addLimitOrder(111, Side.SELL, 43, 80);
+        orderBook.addLimitOrder(112, Side.SELL, 46, 78);
+        orderBook.addLimitOrder(113, Side.SELL, 46, 77);
+        assertEquals(77, orderBook.getLowestSell().getLimitPrice());
+
+        orderBook.cancelLimitOrder(113);
+        assertEquals(78, orderBook.getLowestSell().getLimitPrice());
+    }
+
+    @Test
+    public void testUpdateBookEdgeOnDeleteHighestBuy() {
+        orderBook.addLimitOrder(111, Side.BUY, 43, 80);
+        orderBook.addLimitOrder(112, Side.BUY, 46, 78);
+        orderBook.addLimitOrder(113, Side.BUY, 46, 82);
+        assertEquals(82, orderBook.getHighestBuy().getLimitPrice());
+
+        orderBook.cancelLimitOrder(113);
+        assertEquals(80, orderBook.getHighestBuy().getLimitPrice());
+    }
+
+    @Test
+    public void testUpdateBookEdgeOnDeleteHighestBuyEmptyTree() {
+        orderBook.addLimitOrder(111, Side.BUY, 43, 80);
+        assertEquals(80, orderBook.getHighestBuy().getLimitPrice());
+
+        orderBook.cancelLimitOrder(111);
+        assertNull(orderBook.getHighestBuy());
+    }
+
+    @Test
+    public void testUpdateBookEdgeOnDeleteLowestSellEmptyTree() {
+        orderBook.addLimitOrder(111, Side.SELL, 43, 80);
+        assertEquals(80, orderBook.getLowestSell().getLimitPrice());
+
+        orderBook.cancelLimitOrder(111);
+        assertNull(orderBook.getLowestSell());
+    }
+
+    @Test
+    public void testUpdateBookEdgeOnDeleteHighestBuyRootLimit() {
+        orderBook.addLimitOrder(111, Side.BUY, 43, 80);
+        orderBook.addLimitOrder(112, Side.BUY, 43, 75);
+        assertEquals(80, orderBook.getHighestBuy().getLimitPrice());
+
+        orderBook.cancelLimitOrder(111);
+        assertEquals(75, orderBook.getHighestBuy().getLimitPrice());
+    }
+
+    @Test
+    public void testUpdateBookEdgeOnDeleteLowestSellRootLimit() {
+        orderBook.addLimitOrder(111, Side.SELL, 10, 80);
+        orderBook.addLimitOrder(112, Side.SELL, 20, 85);
+        assertEquals(80, orderBook.getLowestSell().getLimitPrice());
+
+        orderBook.cancelLimitOrder(111);
+        assertEquals(85, orderBook.getLowestSell().getLimitPrice());
+    }
+
+    @Test
+    public void testUpdateBookEdgeOnDeleteHighestBuyNotParent() {
+        orderBook.addLimitOrder(111, Side.BUY, 43, 80);
+        orderBook.addLimitOrder(112, Side.BUY, 43, 75);
+        orderBook.addLimitOrder(113, Side.BUY, 43, 85);
+        orderBook.addLimitOrder(114, Side.BUY, 43, 82);
+        assertEquals(85, orderBook.getHighestBuy().getLimitPrice());
+
+        orderBook.cancelLimitOrder(113);
+        assertEquals(82, orderBook.getHighestBuy().getLimitPrice());
+    }
+
+    @Test
+    public void testUpdateBookEdgeOnDeleteLowestSellNotParent() {
+        orderBook.addLimitOrder(111, Side.SELL, 43, 80);
+        orderBook.addLimitOrder(112, Side.SELL, 43, 75);
+        orderBook.addLimitOrder(113, Side.SELL, 43, 85);
+        orderBook.addLimitOrder(114, Side.SELL, 43, 76);
+        assertEquals(75, orderBook.getLowestSell().getLimitPrice());
+
+        orderBook.cancelLimitOrder(112);
+        assertEquals(76, orderBook.getLowestSell().getLimitPrice());
+    }
+
 }
