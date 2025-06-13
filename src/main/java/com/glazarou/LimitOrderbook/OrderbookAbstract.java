@@ -1,6 +1,8 @@
 package com.glazarou.LimitOrderbook;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class OrderbookAbstract {
@@ -98,5 +100,44 @@ public abstract class OrderbookAbstract {
         printTreeWithBranches(node.getRightChild(), prefix + (isRight ? "    " : "│   "), true);
         System.out.println(prefix + (isRight ? "┌── " : "└── ") + node.getLimitPrice());
         printTreeWithBranches(node.getLeftChild(), prefix + (isRight ? "│   " : "    "), false);
+    }
+
+    // in-order traversal: Left, Root, Right
+    public List<Integer> inOrderTreeTraversal(Limit root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null)
+            return result;
+
+        result.addAll(inOrderTreeTraversal(root.getLeftChild()));
+        result.add(root.getLimitPrice());
+        result.addAll(inOrderTreeTraversal(root.getRightChild()));
+
+        return result;
+    }
+
+    // pre-order traversal: Root, Left, Right
+    public List<Integer> preOrderTreeTraversal(Limit root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null)
+            return result;
+
+        result.add(root.getLimitPrice());
+        result.addAll(preOrderTreeTraversal(root.getLeftChild()));
+        result.addAll(preOrderTreeTraversal(root.getRightChild()));
+
+        return result;
+    }
+
+    // post-order traversal: Left, Right, Root
+    public List<Integer> postOrderTreeTraversal(Limit root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null)
+            return result;
+
+        result.addAll(postOrderTreeTraversal(root.getLeftChild()));
+        result.addAll(postOrderTreeTraversal(root.getRightChild()));
+        result.add(root.getLimitPrice());
+
+        return result;
     }
 }

@@ -27,4 +27,4 @@ Supports market and limit orders.
 
 ---
 
-## Tests
+## Testing

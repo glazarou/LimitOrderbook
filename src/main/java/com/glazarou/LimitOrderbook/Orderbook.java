@@ -74,6 +74,7 @@ public class Orderbook extends OrderbookAbstract{
         updateBookEdgeRemove(limit);
         removeFromLimitMap(limit.getLimitPrice(), limit.getSide());
         removeNode(limit);
+        changeBookRoots(limit);
 
         Limit parent = limit.getParent();
         int limitPrice = limit.getLimitPrice();

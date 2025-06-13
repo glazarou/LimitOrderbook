@@ -1,6 +1,10 @@
 package com.glazarou;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,7 +13,7 @@ import com.glazarou.LimitOrderbook.Limit;
 import com.glazarou.LimitOrderbook.Orderbook;
 import com.glazarou.LimitOrderbook.Side;
 
-public class AppTest {
+public class OrderbookTest {
     private Orderbook orderBook;
 
     @BeforeEach
@@ -50,7 +54,7 @@ public class AppTest {
         assertEquals(80, orderBook.getLowestSell().getLimitPrice());
     }
 
-    //cancel orders
+    // cancel orders
     @Test
     public void testCancelOrderLeavingNonEmptyLimit() {
         orderBook.addLimitOrder(5, Side.BUY, 80, 20);
@@ -114,7 +118,7 @@ public class AppTest {
         assertNull(limit1.getLeftChild());
     }
 
-    //updating book edges
+    // updating orderBook edges
     @Test
     public void testUpdateBookEdgeOnInsertLowestSell() {
         orderBook.addLimitOrder(111, Side.SELL, 43, 80);
@@ -223,6 +227,91 @@ public class AppTest {
 
         orderBook.cancelLimitOrder(112);
         assertEquals(76, orderBook.getLowestSell().getLimitPrice());
+    }
+
+    //limit removals with the avl tree structure test
+    @Test
+    void testRemoveLimitWithTwoChildrenRightChildHasLeftChildWithRightChild() {
+        orderBook.addLimitOrder(3, Side.BUY, 80, 224);
+        orderBook.addLimitOrder(4, Side.BUY, 80, 220);
+        orderBook.addLimitOrder(5, Side.BUY, 80, 228);
+        orderBook.addLimitOrder(6, Side.BUY, 80, 218);
+        orderBook.addLimitOrder(7, Side.BUY, 80, 221);
+        orderBook.addLimitOrder(8, Side.BUY, 80, 226);
+        orderBook.addLimitOrder(9, Side.BUY, 80, 231);
+        orderBook.addLimitOrder(10, Side.BUY, 80, 217);
+        orderBook.addLimitOrder(11, Side.BUY, 80, 225);
+        orderBook.addLimitOrder(12, Side.BUY, 80, 229);
+        orderBook.addLimitOrder(13, Side.BUY, 80, 233);
+        orderBook.addLimitOrder(14, Side.BUY, 80, 230);
+
+        List<Integer> expectedInOrder = Arrays.asList(217, 218, 220, 221, 224, 225, 226, 228, 229, 230, 231, 233);
+        assertEquals(expectedInOrder, orderBook.inOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        List<Integer> expectedPreOrder = Arrays.asList(224, 220, 218, 217, 221, 228, 226, 225, 231, 229, 230, 233);
+        assertEquals(expectedPreOrder, orderBook.preOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        List<Integer> expectedPostOrder = Arrays.asList(217, 218, 221, 220, 225, 226, 230, 229, 233, 231, 228, 224);
+        assertEquals(expectedPostOrder, orderBook.postOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        orderBook.cancelLimitOrder(5);
+
+        expectedInOrder = Arrays.asList(217, 218, 220, 221, 224, 225, 226, 229, 230, 231, 233);
+        assertEquals(expectedInOrder, orderBook.inOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        expectedPreOrder = Arrays.asList(224, 220, 218, 217, 221, 229, 226, 225, 231, 230, 233);
+        assertEquals(expectedPreOrder, orderBook.preOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        expectedPostOrder = Arrays.asList(217, 218, 221, 220, 225, 226, 230, 233, 231, 229, 224);
+        assertEquals(expectedPostOrder, orderBook.postOrderTreeTraversal(orderBook.getLimitBuyTree()));
+    }
+
+    @Test
+    void testRemoveLimitWithTwoChildrenRightChildHasLeftChildWithRightChild2() {
+        orderBook.addLimitOrder(3, Side.BUY, 80, 250);
+        orderBook.addLimitOrder(4, Side.BUY, 80, 255);
+        orderBook.addLimitOrder(5, Side.BUY, 80, 228);
+        orderBook.addLimitOrder(6, Side.BUY, 80, 251);
+        orderBook.addLimitOrder(7, Side.BUY, 80, 260);
+        orderBook.addLimitOrder(8, Side.BUY, 80, 226);
+        orderBook.addLimitOrder(9, Side.BUY, 80, 231);
+        orderBook.addLimitOrder(10, Side.BUY, 80, 265);
+        orderBook.addLimitOrder(11, Side.BUY, 80, 225);
+        orderBook.addLimitOrder(12, Side.BUY, 80, 229);
+        orderBook.addLimitOrder(13, Side.BUY, 80, 233);
+        orderBook.addLimitOrder(14, Side.BUY, 80, 230);
+
+        List<Integer> expectedInOrder = Arrays.asList(225, 226, 228, 229, 230, 231, 233, 250, 251, 255, 260, 265);
+        assertEquals(expectedInOrder, orderBook.inOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        List<Integer> expectedPreOrder = Arrays.asList(250, 228, 226, 225, 231, 229, 230, 233, 255, 251, 260, 265);
+        assertEquals(expectedPreOrder, orderBook.preOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        List<Integer> expectedPostOrder = Arrays.asList(225, 226, 230, 229, 233, 231, 228, 251, 265, 260, 255, 250);
+        assertEquals(expectedPostOrder, orderBook.postOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        orderBook.cancelLimitOrder(5);
+
+        expectedInOrder = Arrays.asList(225, 226, 229, 230, 231, 233, 250, 251, 255, 260, 265);
+        assertEquals(expectedInOrder, orderBook.inOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        expectedPreOrder = Arrays.asList(250, 229, 226, 225, 231, 230, 233, 255, 251, 260, 265);
+        assertEquals(expectedPreOrder, orderBook.preOrderTreeTraversal(orderBook.getLimitBuyTree()));
+
+        expectedPostOrder = Arrays.asList(225, 226, 230, 233, 231, 229, 251, 265, 260, 255, 250);
+        assertEquals(expectedPostOrder, orderBook.postOrderTreeTraversal(orderBook.getLimitBuyTree()));
+    }
+
+    @Test
+    void testEmptyingATree() {
+        orderBook.addLimitOrder(5, Side.BUY, 80, 20);
+
+        assertNotNull(orderBook.getLimitBuyTree());
+        assertEquals(20, orderBook.getLimitBuyTree().getLimitPrice());
+
+        orderBook.cancelLimitOrder(5);
+
+        assertNull(orderBook.getLimitBuyTree());
     }
 
 }
